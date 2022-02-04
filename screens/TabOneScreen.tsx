@@ -1,32 +1,27 @@
-import { StyleSheet } from 'react-native';
+import React from "react";
+import { FlatList, Image, LogBox, StyleSheet, Text, View } from "react-native";
+import chatRoomsData from "../assets/dummy-data/ChatRooms";
+import ChatRoomItem from "../components/ChatRoomItem";
 
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
-import { RootTabScreenProps } from '../types';
+const chatRoom1 = chatRoomsData[0];
+const chatRoom2 = chatRoomsData[1];
 
-export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
+export default function TabOneScreen() {
+  LogBox.ignoreAllLogs();
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/TabOneScreen.tsx" />
+    <View style={styles.page}>
+      <FlatList
+        data={chatRoomsData}
+        renderItem={({ item }) => <ChatRoomItem chatRoom={item} />}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  page: {
+    backgroundColor: "white",
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
   },
 });
