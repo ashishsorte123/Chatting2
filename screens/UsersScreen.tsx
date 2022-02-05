@@ -1,14 +1,22 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FlatList, LogBox, StyleSheet, View } from "react-native";
-import Users from "../assets/dummy-data/Users";
 import UserItem from "../components/UserItem";
+import { DataStore } from "@aws-amplify/datastore";
+import { User } from "../src/models";
 
 export default function UsersScreen() {
   LogBox.ignoreAllLogs();
+  LogBox.ignoreLogs(["Setting a timer"]);
+
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    DataStore.query(User).then(setUsers);
+  });
   return (
     <View style={styles.page}>
       <FlatList
-        data={Users}
+        data={users}
         renderItem={({ item }) => <UserItem user={item} />}
         showsVerticalScrollIndicator={false}
       />
