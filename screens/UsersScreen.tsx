@@ -12,7 +12,7 @@ export default function UsersScreen() {
 
   useEffect(() => {
     DataStore.query(User).then(setUsers);
-  });
+  }, []);
   return (
     <View style={styles.page}>
       <FlatList

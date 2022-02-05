@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   FlatList,
   Image,
@@ -10,12 +10,26 @@ import {
 } from "react-native";
 import chatRoomsData from "../assets/dummy-data/ChatRooms";
 import ChatRoomItem from "../components/ChatRoomItem";
-import { Auth } from "aws-amplify";
-
-const chatRoom1 = chatRoomsData[0];
-const chatRoom2 = chatRoomsData[1];
+import { Auth, DataStore } from "aws-amplify";
+import { ChatRoom, ChatRoomUser } from "../src/models";
 
 export default function HomeScreen() {
+  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
+
+  useEffect(() => {
+    const fetchChatRooms = async () => {
+      const userData = await Auth.currentAuthenticatedUser();
+
+      const chatRooms = (await DataStore.query(ChatRoomUser))
+        .filter(
+          (chatRoomUser) => chatRoomUser.user.id === userData.attributes.sub
+        )
+        .map((chatRoomUser) => chatRoomUser.chatRoom);
+
+      setChatRooms(chatRooms);
+    };
+    fetchChatRooms();
+  }, []);
   const onPress = () => {
     Auth.signOut();
   };
@@ -23,12 +37,12 @@ export default function HomeScreen() {
   return (
     <View style={styles.page}>
       <FlatList
-        data={chatRoomsData}
+        data={chatRooms}
         renderItem={({ item }) => <ChatRoomItem chatRoom={item} />}
         showsVerticalScrollIndicator={false}
       />
 
-      <Pressable
+      {/* <Pressable
         onPress={onPress}
         style={{
           backgroundColor: "red",
@@ -40,7 +54,7 @@ export default function HomeScreen() {
         }}
       >
         <Text>Logout</Text>
-      </Pressable>
+      </Pressable> */}
     </View>
   );
 }
