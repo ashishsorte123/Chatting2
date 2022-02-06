@@ -35,6 +35,7 @@ export default function UserItem({ user }) {
       })
     );
 
+    
     navigation.navigate("ChatRoom", { id: newChatRoom.id });
   };
 
