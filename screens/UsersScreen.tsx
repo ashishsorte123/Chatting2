@@ -5,8 +5,8 @@ import { DataStore } from "@aws-amplify/datastore";
 import { User } from "../src/models";
 
 export default function UsersScreen() {
-  LogBox.ignoreAllLogs();
-  LogBox.ignoreLogs(["Setting a timer"]);
+  // LogBox.ignoreAllLogs();
+  // LogBox.ignoreLogs(["Setting a timer"]);
 
   const [users, setUsers] = useState<User[]>([]);
 

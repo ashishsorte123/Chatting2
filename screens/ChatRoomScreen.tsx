@@ -1,27 +1,91 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  LogBox,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import React, { useState, useEffect } from "react";
 import Message from "../components/Message";
-import chatRoomData from "../assets/dummy-data/Chats";
+import { DataStore } from "@aws-amplify/datastore";
+import { Message as MessageModel } from "../src/models";
 import MessageInput from "../components/MessageInput";
 import { useRoute, useNavigation } from "@react-navigation/core";
+import { ChatRoom } from "../src/models";
+import { SortDirection } from "aws-amplify";
 
 export default function ChatRoomScreen() {
-  const route = useRoute();
+  const [messages, setMessages] = useState<MessageModel[]>([]);
+  const [chatRoom, setChatRoom] = useState<ChatRoom | null>(null);
 
+  const route = useRoute();
   const navigation = useNavigation();
+
+  useEffect(() => {
+    fetchChatRoom();
+  }, []);
+
+  useEffect(() => {
+    fetchMessages();
+  }, [chatRoom]);
+
+  useEffect(() => {
+    const subscription = DataStore.observe(MessageModel).subscribe((msg) => {
+      console.log(msg.model, msg.opType, msg.element);
+      if (msg.model === MessageModel && msg.opType === "INSERT") {
+        setMessages((existingMessage) => [msg.element, ...existingMessage]);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const fetchChatRoom = async () => {
+    if (!route.params?.id) {
+      console.warn("No chatroom id provided");
+      return;
+    }
+
+    const chatRoom = await DataStore.query(ChatRoom, route.params.id);
+    if (!chatRoom) {
+      console.error("Couldn't find a chat room with this id ");
+    } else {
+      setChatRoom(chatRoom);
+    }
+  };
+
+  const fetchMessages = async () => {
+    if (!chatRoom) {
+      return;
+    }
+    const fetchedMessages = await DataStore.query(
+      MessageModel,
+      (message) => message.chatroomID("eq", chatRoom?.id),
+      {
+        sort: (message) => message.createdAt(SortDirection.DESCENDING),
+      }
+    );
+    console.log(fetchedMessages);
+    setMessages(fetchedMessages);
+  };
 
   navigation.setOptions({ title: "Elon Musk" });
 
-  console.log("Displaying chat room:", route.params?.id);
+  if (!chatRoom) {
+    return <ActivityIndicator />;
+  }
+
   return (
-    <View style={styles.page}>
+    <SafeAreaView style={styles.page}>
       <FlatList
-        data={chatRoomData.messages}
+        data={messages}
         renderItem={({ item }) => <Message message={item} />}
         inverted
       />
-      <MessageInput />
-    </View>
+      <MessageInput chatRoom={chatRoom} />
+    </SafeAreaView>
   );
 }
 

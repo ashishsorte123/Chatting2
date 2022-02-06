@@ -9,15 +9,16 @@ import {
   ActivityIndicator,
   LogBox,
 } from "react-native";
-import { ChatRoomUser } from "../../src/models";
-import { User } from "../../src/models";
+import { User, ChatRoomUser, Message } from "../../src/models";
 import styles from "./styles";
 
 export default function ChatRoomItem({ chatRoom }) {
-  LogBox.ignoreAllLogs();
+  // LogBox.ignoreAllLogs();
   // const [users, setUsers] = useState<User[]>([]);
 
   const [user, setUser] = useState<User | null>(null);
+
+  const [lastMessage, setLastMessage] = useState<Message | undefined>();
 
   const navigation = useNavigation();
 
@@ -38,8 +39,16 @@ export default function ChatRoomItem({ chatRoom }) {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    if (!chatRoom.chatRoomLastMessageId) {
+      return;
+    }
+    DataStore.query(Message, chatRoom.chatRoomLastMessageId).then(
+      setLastMessage
+    );
+  }, []);
+
   const onPress = () => {
-    console.log("pressed on", user.name);
     navigation.navigate("ChatRoom", { id: chatRoom.id });
   };
 
@@ -62,10 +71,10 @@ export default function ChatRoomItem({ chatRoom }) {
       <View style={styles.rightContainer}>
         <View style={styles.row}>
           <Text style={styles.name}>{user.name}</Text>
-          <Text style={styles.text}>{chatRoom.lastMessage?.createdAt}</Text>
+          <Text style={styles.text}>{lastMessage?.createdAt}</Text>
         </View>
         <Text numberOfLines={1} style={styles.text}>
-          {chatRoom.lastMessage?.content}
+          {lastMessage?.content}
         </Text>
       </View>
     </Pressable>
