@@ -1,12 +1,12 @@
 {
   "auth": {
-    "Chatting2": {
+    "Chatting": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [
         {
           "category": "function",
-          "resourceName": "Chatting2PostConfirmation",
+          "resourceName": "ChattingPostConfirmation",
           "triggerProvider": "Cognito",
           "attributes": [
             "Arn",
@@ -38,7 +38,7 @@
     }
   },
   "api": {
-    "Chatting2": {
+    "Chatting": {
       "service": "AppSync",
       "providerPlugin": "awscloudformation",
       "output": {
@@ -60,17 +60,10 @@
     }
   },
   "function": {
-    "Chatting2PostConfirmation": {
+    "ChattingPostConfirmation": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
-    }
-  },
-  "storage": {
-    "s326d57896": {
-      "service": "S3",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": []
     }
   }
 }

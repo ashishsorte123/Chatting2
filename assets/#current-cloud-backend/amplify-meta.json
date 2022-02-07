@@ -1,0 +1,126 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-chatting-staging-80804-authRole",
+      "UnauthRoleArn": "arn:aws:iam::495215112334:role/amplify-chatting-staging-80804-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::495215112334:role/amplify-chatting-staging-80804-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-chatting-staging-80804-deployment",
+      "UnauthRoleName": "amplify-chatting-staging-80804-unauthRole",
+      "StackName": "amplify-chatting-staging-80804",
+      "StackId": "arn:aws:cloudformation:us-east-1:495215112334:stack/amplify-chatting-staging-80804/6a05e6a0-84c8-11ec-b560-1222c22090c1",
+      "AmplifyAppId": "d22v1slj6tkzat",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-chatting-staging-80804-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+    }
+  },
+  "auth": {
+    "Chatting": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "function",
+          "resourceName": "ChattingPostConfirmation",
+          "triggerProvider": "Cognito",
+          "attributes": [
+            "Arn",
+            "Name"
+          ]
+        }
+      ],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "output": {
+        "UserPoolId": "us-east-1_NKAl21icj",
+        "AppClientIDWeb": "57cnbsmlfo7goor69u3ee3r8ts",
+        "AppClientID": "6s9350iq1f4l1r7u7it81h884j",
+        "IdentityPoolId": "us-east-1:f9d126bf-10d3-4019-b018-30de85b25e30",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:495215112334:userpool/us-east-1_NKAl21icj",
+        "IdentityPoolName": "testAuthIdentityPool__staging",
+        "UserPoolName": "Chatting"
+      },
+      "lastPushTimeStamp": "2022-02-03T11:48:20.946Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-chatting-staging-80804-deployment/amplify-cfn-templates/auth/Chatting-cloudformation-template.json",
+        "logicalId": "authChatting"
+      },
+      "lastPushDirHash": "ELnftBTGgcTZfzxy4Z683kQ80ag="
+    }
+  },
+  "api": {
+    "Chatting": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "API_KEY",
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 30,
+              "description": "api key description"
+            }
+          },
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AWS_IAM"
+            }
+          ]
+        },
+        "GraphQLAPIIdOutput": "iw3ea4lemjdmvnyamyuzq4vpym",
+        "GraphQLAPIEndpointOutput": "https://mvt6ldw26fd6lopyzc5jxcmrwy.appsync-api.us-east-1.amazonaws.com/graphql",
+        "GraphQLAPIKeyOutput": "da2-cctatk2mnrcldaelbotlzwasva"
+      },
+      "lastPushTimeStamp": "2022-02-03T11:48:20.796Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-chatting-staging-80804-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "logicalId": "apiChatting"
+      }
+    }
+  },
+  "function": {
+    "ChattingPostConfirmation": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "lastBuildTimeStamp": "2022-02-03T11:45:25.377Z",
+      "lastBuildType": "PROD",
+      "lastPackageTimeStamp": "2022-02-03T11:45:27.177Z",
+      "distZipFilename": "ChattingPostConfirmation-6e3673554a782f676376-build.zip",
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-chatting-staging-80804-deployment",
+        "s3Key": "amplify-builds/ChattingPostConfirmation-6e3673554a782f676376-build.zip"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-chatting-staging-80804-deployment/amplify-cfn-templates/function/ChattingPostConfirmation-cloudformation-template.json",
+        "logicalId": "functionChattingPostConfirmation"
+      },
+      "lastPushTimeStamp": "2022-02-03T11:48:20.946Z",
+      "output": {
+        "Region": "us-east-1",
+        "Arn": "arn:aws:lambda:us-east-1:495215112334:function:ChattingPostConfirmation-staging",
+        "Name": "ChattingPostConfirmation-staging",
+        "LambdaExecutionRole": "ChattingPostConfirmation-staging"
+      },
+      "lastPushDirHash": "95TfxzF5+nWCi29rrlEcb1P62Vs="
+    }
+  }
+}
