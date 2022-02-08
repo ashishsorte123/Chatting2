@@ -1,5 +1,6 @@
 import { useNavigation } from "@react-navigation/core";
 import { Auth, DataStore } from "aws-amplify";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import {
   Image,
@@ -50,6 +51,8 @@ export default function ChatRoomItem({ chatRoom }) {
     navigation.navigate("ChatRoom", { id: chatRoom.id });
   };
 
+  const time = moment(lastMessage?.createdAt).from(moment());
+
   if (!user) {
     return <ActivityIndicator />;
   }
@@ -69,7 +72,7 @@ export default function ChatRoomItem({ chatRoom }) {
       <View style={styles.rightContainer}>
         <View style={styles.row}>
           <Text style={styles.name}>{user.name}</Text>
-          <Text style={styles.text}>{lastMessage?.createdAt}</Text>
+          <Text style={styles.text}>{time}</Text>
         </View>
         <Text numberOfLines={1} style={styles.text}>
           {lastMessage?.content}
