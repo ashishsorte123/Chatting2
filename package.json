@@ -41,7 +41,8 @@
     "react-native-uuid": "^2.0.1",
     "react-native-web": "0.17.1",
     "uuid": "^8.3.2",
-    "uuidv4": "^6.2.12"
+    "uuidv4": "^6.2.12",
+    "expo-av": "~10.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

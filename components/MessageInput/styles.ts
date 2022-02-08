@@ -9,15 +9,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
 
-  sendImageContainer: {
-    flexDirection: "row",
-    margin: 10,
-    alignSelf: "stretch",
-    justifyContent: "space-between",
-    borderWidth: 1,
-    borderColor: "lightgrey",
-  },
-
   inputContainer: {
     backgroundColor: "#f2f2f2",
     flex: 1,
@@ -51,6 +42,15 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 35,
+  },
+
+  sendImageContainer: {
+    flexDirection: "row",
+    margin: 10,
+    alignSelf: "stretch",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: "lightgrey",
   },
 });
 
