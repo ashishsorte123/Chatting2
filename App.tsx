@@ -29,7 +29,7 @@ function App() {
       if (
         event === "outboxMutationProcessed" &&
         data.model === Message &&
-        !["DELIVERED", "READ"].includes(data.element.this.status)
+        !["DELIVERED", "READ"].includes(data.element.status)
       ) {
         // set the message status to delivered
         DataStore.save(
