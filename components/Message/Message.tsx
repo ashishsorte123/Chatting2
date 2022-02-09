@@ -10,16 +10,36 @@ import { User } from "../../src/models";
 import styles from "./styles";
 import { S3Image } from "aws-amplify-react-native";
 import AudioPlayer from "../AudioPlayer";
+import { Ionicons } from "@expo/vector-icons";
+import { Message as MessageModal } from "../../src/models";
 
-const Message = ({ message }) => {
+const Message = (props) => {
+  const [message, setMessage] = useState(props.message);
   const [user, setUser] = useState<User | undefined>();
-  const [isMe, setIsMe] = useState<boolean>(false);
+  const [isMe, setIsMe] = useState<boolean | null>(null);
   const [soundURI, setSoundURI] = useState<any>(null);
   const { width } = useWindowDimensions();
 
   useEffect(() => {
     DataStore.query(User, message.userID).then(setUser);
   }, []);
+
+  useEffect(() => {
+    const subscription = DataStore.observe(MessageModal, message.id).subscribe(
+      (msg) => {
+        // console.log(msg.model, msg.opType, msg.element);
+        if (msg.model === MessageModal && msg.opType === "UPDATE") {
+          setMessage((message) => ({ ...message, ...msg.element }));
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    setAsRead();
+  }, [isMe]);
 
   useEffect(() => {
     if (message.audio) {
@@ -38,6 +58,16 @@ const Message = ({ message }) => {
     checkIfMe();
   }, [user]);
 
+  const setAsRead = async () => {
+    if (isMe === false && message.status !== "READ") {
+      await DataStore.save(
+        MessageModal.copyOf(message, (updated) => {
+          updated.status = "READ";
+        })
+      );
+    }
+  };
+
   if (!user) {
     return <ActivityIndicator />;
   }
@@ -54,7 +84,7 @@ const Message = ({ message }) => {
         <View style={{ marginBottom: message.content ? 10 : 0 }}>
           <S3Image
             imgKey={message.image}
-            style={{ width: width * 0.7, aspectRatio: 4 / 3 }}
+            style={{ width: width * 0.65, aspectRatio: 4 / 3 }}
             resizeMode="cover"
           />
         </View>
@@ -66,6 +96,15 @@ const Message = ({ message }) => {
         <Text style={{ color: isMe ? "black" : "white" }}>
           {message.content}
         </Text>
+      )}
+
+      {isMe && !!message.status && message.status !== "SENT" && (
+        <Ionicons
+          name={message.status === "DELIVERED" ? "checkmark" : "checkmark-done"}
+          size={16}
+          color="grey"
+          style={{ marginHorizontal: 5 }}
+        />
       )}
     </View>
   );
