@@ -1,4 +1,4 @@
-const blacklist = require("metro-config/src/defaults/exclusionList");
+const blacklist = require("metro-config/src/defaults/blacklist");
 
 module.exports = {
   resolver: {
