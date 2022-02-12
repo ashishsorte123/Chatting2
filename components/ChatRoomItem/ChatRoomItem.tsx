@@ -2,14 +2,7 @@ import { useNavigation } from "@react-navigation/core";
 import { Auth, DataStore } from "aws-amplify";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
-import {
-  Image,
-  Text,
-  View,
-  Pressable,
-  ActivityIndicator,
-  LogBox,
-} from "react-native";
+import { Image, Text, View, Pressable, ActivityIndicator } from "react-native";
 import { User, ChatRoomUser, Message } from "../../src/models";
 import styles from "./styles";
 
@@ -18,9 +11,7 @@ export default function ChatRoomItem({ chatRoom }) {
   // const [users, setUsers] = useState<User[]>([]);
 
   const [user, setUser] = useState<User | null>(null);
-
   const [lastMessage, setLastMessage] = useState<Message | undefined>();
-
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -60,7 +51,7 @@ export default function ChatRoomItem({ chatRoom }) {
     <Pressable onPress={onPress} style={styles.container}>
       <Image
         source={{
-          uri: user.imageUri,
+          uri: chatRoom.imageUri || user.imageUri,
         }}
         style={styles.image}
       />
@@ -71,7 +62,7 @@ export default function ChatRoomItem({ chatRoom }) {
       )}
       <View style={styles.rightContainer}>
         <View style={styles.row}>
-          <Text style={styles.name}>{user.name}</Text>
+          <Text style={styles.name}>{chatRoom.name || user.name}</Text>
           <Text style={styles.text}>{time}</Text>
         </View>
         <Text numberOfLines={1} style={styles.text}>

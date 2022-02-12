@@ -42,6 +42,7 @@ const AudioPlayer = ({ soundURI }) => {
     setpaused(!status.isPlaying);
     setAudioDuration(status.durationMillis || 0);
   };
+  
 
   const playpausedSound = async () => {
     if (!sound) {

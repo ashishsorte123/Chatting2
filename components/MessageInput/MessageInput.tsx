@@ -20,9 +20,10 @@ import styles from "./styles";
 import EmojiSelector from "react-native-emoji-selector";
 import * as ImagePicker from "expo-image-picker";
 import uuid from "react-native-uuid";
-import { Audio, AVPlaybackStatus } from "expo-av";
+import { Audio } from "expo-av";
 import AudioPlayer from "../AudioPlayer";
 import MessageComponent from "../Message";
+import { useNavigation } from "@react-navigation/native";
 
 const MessageInput = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
   const [message, setMessage] = useState("");
@@ -30,11 +31,9 @@ const MessageInput = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
   const [image, setImage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [soundURI, setSoundURI] = useState<string | null>(null);
-  const [paused, setpaused] = useState(true);
-  const [audioProgress, setAudioProgress] = useState(0);
-  const [audioDuration, setAudioDuration] = useState(0);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     (async () => {
@@ -56,8 +55,8 @@ const MessageInput = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
   }, []);
 
   const sendMessage = async () => {
+    // get all the users of this chatroom
     const user = await Auth.currentAuthenticatedUser();
-
     const newMessage = await DataStore.save(
       new Message({
         content: message,
@@ -70,7 +69,7 @@ const MessageInput = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
     resetFields();
   };
 
-  const updateLastMessage = async (newMessage) => {
+  const updateLastMessage = async (newMessage: Message | undefined) => {
     DataStore.save(
       ChatRoom.copyOf(chatRoom, (updatedChatRoom) => {
         updatedChatRoom.LastMessage = newMessage;
@@ -131,8 +130,7 @@ const MessageInput = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
     }
   };
 
-  const progressCallback = (progress) => {
-    // console.log(`Uploaded: ${progress.loaded}/${progress.total}`);
+  const progressCallback = (progress: { loaded: number; total: number }) => {
     setProgress(progress.loaded / progress.total);
   };
 
@@ -144,8 +142,9 @@ const MessageInput = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
     const { key } = await Storage.put(`${uuid.v4()}.jpeg`, blob, {
       progressCallback,
     });
-    // send message
 
+
+    // send message
     const user = await Auth.currentAuthenticatedUser();
     const newMessage = await DataStore.save(
       new Message({
@@ -164,16 +163,6 @@ const MessageInput = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
     const response = await fetch(uri);
     const blob = await response.blob();
     return blob;
-  };
-
-  // Audio
-  const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
-    if (!status.isLoaded) {
-      return;
-    }
-    setAudioProgress(status.positionMillis / (status.durationMillis || 1));
-    setpaused(!status.isPlaying);
-    setAudioDuration(status.durationMillis || 0);
   };
 
   async function startRecording() {
@@ -202,21 +191,17 @@ const MessageInput = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
 
     setRecording(null);
     await recording.stopAndUnloadAsync();
-    // await Audio.setAudioModeAsync({
-    //   allowsRecordingIOS: false,
-    // });
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+    });
+
     const uri = recording.getURI();
+
     console.log("Recording stopped and stored at", uri);
     if (!uri) {
       return;
     }
     setSoundURI(uri);
-    const { sound } = await Audio.Sound.createAsync(
-      { uri },
-      {},
-      onPlaybackStatusUpdate
-    );
-    setSound(sound);
   }
 
   const sendAudio = async () => {
